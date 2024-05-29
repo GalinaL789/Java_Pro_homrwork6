@@ -28,26 +28,52 @@ public class CarServlet extends HttpServlet {
         // resp - объект ответа, который будет отправлен клиенту после того,
         //        как отработает наш метод. И мы можем в этот объект поместить всю
         //        информацию, которую мы хотим отправить клиенту в ответ на его запрос.
+        String idParam = req.getParameter("id");
+        if (idParam != null) {
+            resp.getWriter().write("Hello Car " + idParam + "!");
+            try{
+                long id=Long.parseLong(idParam);
+                Car car = repository.getCarById(id);
+                if(car != null) {
+                    //resp.setContentType("application/json");
+                    ObjectMapper mapper = new ObjectMapper();
+                    String json = mapper.writeValueAsString(car);
+                    //resp.getWriter().write(json);
+                    resp.getWriter().write("Car is found");
 
-        List<Car> cars = repository.getAllCars();
-        cars.forEach(x -> {
-            try {
-                resp.getWriter().write(x.toString() + "\n");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                }
+                else {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    resp.getWriter().write("Car not found");
+                }
             }
-        });
+             catch (Exception e)
+             {
+                 //TODO handle exception
+             }
+
+        }
+        else {
+            List<Car> cars = repository.getAllCars();
+            cars.forEach(x -> {
+                try {
+                    resp.getWriter().write(x.toString() + "\n");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
 
         // TODO Домашнее задание:
         // Реализовать получение одного автомобиля по id
-         Map<String, String[]> parameterMap = req.getParameterMap();
-         parameterMap.forEach((k, v) -> {
-             System.out.println("key: " + k );
-             for (int i = 0; i < v.length; i++) {
-                 System.out.println("value: " + v[i]);
-
-             }
-         });
+//         Map<String, String[]> parameterMap = req.getParameterMap();
+//         parameterMap.forEach((k, v) -> {
+//             System.out.println("key: " + k );
+//             for (int i = 0; i < v.length; i++) {
+//                 System.out.println("value: " + v[i]);
+//
+//             }
+//         });
     }
 
     @Override
