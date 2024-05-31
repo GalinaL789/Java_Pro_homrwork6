@@ -2,20 +2,21 @@ package app.controller;
 
 import app.domain.Car;
 import app.repository.CarRepository;
-import app.repository.CarRepositoryMap;
+import app.repository.CarRepositoryDB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
+@WebServlet("/cars/*")
 public class CarServlet extends HttpServlet {
 
-    private CarRepository repository = new CarRepositoryMap();
+    private final CarRepository repository = new CarRepositoryDB();
 
     // GET http://10.2.3.4:8080/cars
     // GET http://10.2.3.4:8080/cars?id=5
@@ -29,51 +30,42 @@ public class CarServlet extends HttpServlet {
         //        как отработает наш метод. И мы можем в этот объект поместить всю
         //        информацию, которую мы хотим отправить клиенту в ответ на его запрос.
         String idParam = req.getParameter("id");
+
+
         if (idParam != null) {
-            resp.getWriter().write("Hello Car " + idParam + "!");
-            try{
-                long id=Long.parseLong(idParam);
+            // here we get information about the car by id
+            try {
+                long id = Long.parseLong(idParam);
                 Car car = repository.getCarById(id);
-                if(car != null) {
+                if (car != null) {
                     //resp.setContentType("application/json");
                     ObjectMapper mapper = new ObjectMapper();
                     String json = mapper.writeValueAsString(car);
-                    //resp.getWriter().write(json);
-                    resp.getWriter().write("Car is found");
-
-                }
-                else {
+                    resp.getWriter().write(json);
+                } else {
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-                    resp.getWriter().write("Car not found");
+                    //resp.getWriter().write("Car not found");
                 }
+            } catch (Exception e) {
+                //TODO handle exception
             }
-             catch (Exception e)
-             {
-                 //TODO handle exception
-             }
 
-        }
-        else {
+        } else {
+            //if there is no id, we output all of the cars
             List<Car> cars = repository.getAllCars();
-            cars.forEach(x -> {
-                try {
-                    resp.getWriter().write(x.toString() + "\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(), cars);
         }
 
-        // TODO Домашнее задание:
-        // Реализовать получение одного автомобиля по id
-//         Map<String, String[]> parameterMap = req.getParameterMap();
-//         parameterMap.forEach((k, v) -> {
-//             System.out.println("key: " + k );
-//             for (int i = 0; i < v.length; i++) {
-//                 System.out.println("value: " + v[i]);
-//
-//             }
-//         });
+
+//        cars.forEach(x -> {
+//            try {
+//                resp.getWriter().write(x.toString() + "\n");
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+
     }
 
     @Override
@@ -89,17 +81,27 @@ public class CarServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Для изменения существующего автомобиля в БД
-
-        // TODO Домашнее задание:
-        // Реализовать изменение объекта автомобиля в БД
-        // (при этом меняться должна только цена)
+        ObjectMapper mapper = new ObjectMapper();
+        Car car = mapper.readValue(req.getReader(), Car.class);
+        boolean isUpdated = repository.putCar(car);
+        if (isUpdated) {
+            resp.getWriter().write("The car has been updated");
+        } else {
+            resp.getWriter().write("The car has not been updated");
+        }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Для удаления автомобиля из БД
+        String pathInfo = req.getPathInfo(); // /:id
+        String idParam = pathInfo.substring(1);
 
-        // TODO Домашнее задание:
-        // Реализовать удаление автомобиля из БД по id
+        boolean isDeleted = repository.deleteCarById(Long.parseLong(idParam));
+        if (isDeleted) {
+           resp.getWriter().write("The car has been deleted");
+        } else {
+            resp.getWriter().write("The car has not been deleted");
+        }
     }
 }
