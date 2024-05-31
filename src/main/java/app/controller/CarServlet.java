@@ -3,6 +3,7 @@ package app.controller;
 import app.domain.Car;
 import app.repository.CarRepository;
 import app.repository.CarRepositoryDB;
+import app.repository.CarRepositoryHibernate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,10 +14,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/cars/*")
+//@WebServlet("/cars/*")
 public class CarServlet extends HttpServlet {
 
-    private final CarRepository repository = new CarRepositoryDB();
+    private final CarRepository repository = new CarRepositoryHibernate();
 
     // GET http://10.2.3.4:8080/cars
     // GET http://10.2.3.4:8080/cars?id=5

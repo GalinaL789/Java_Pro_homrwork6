@@ -83,7 +83,7 @@ public class CarRepositoryDB implements CarRepository {
     public Car saveCar(Car car) {
         try (Connection connection = getConnection()) {
 
-            String query = String.format("INSERT INTO car (brand, price, year) VALUES ('%s', %s, %d);",
+            String query = String.format("INSERT INTO cars (brand, price, year) VALUES ('%s', '%s', '%d')",
                     car.getBrand(), car.getPrice(), car.getYear());
 
             Statement statement = connection.createStatement();
@@ -98,6 +98,32 @@ public class CarRepositoryDB implements CarRepository {
             throw new RuntimeException(e);
         }
     }
+//    @Override
+//    public Car saveCar(Car car) {
+//        String query = "INSERT INTO car (brand, price, year) VALUES (?, ?, ?)";
+//
+//        try (Connection connection = getConnection();
+//             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+//
+//            statement.setString(1, car.getBrand());
+//            statement.setDouble(2, car.getPrice());
+//            statement.setInt(3, car.getYear());
+//
+//            statement.executeUpdate();
+//
+//            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+//                if (resultSet.next()) {
+//                    Long id = resultSet.getLong(1);
+//                    car.setId(id);
+//                }
+//            }
+//
+//            return car;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
 
     @Override
     public boolean putCar(Car car) {
