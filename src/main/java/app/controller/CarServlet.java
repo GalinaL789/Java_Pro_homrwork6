@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-//@WebServlet("/cars/*")
+@WebServlet("/cars/*")
 public class CarServlet extends HttpServlet {
 
     private final CarRepository repository = new CarRepositoryHibernate();
