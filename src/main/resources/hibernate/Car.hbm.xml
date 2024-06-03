@@ -10,3 +10,17 @@
             <column name="id"/>
             <generator class="identity"/>
         </id>
+
+        <property name="brand" type="java.lang.String">
+            <column name="brand"/>
+        </property>
+
+        <property name="price" type="java.math.BigDecimal">
+            <column name="price"/>
+        </property>
+
+        <property name="year" type="int">
+            <column name="year"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -2,7 +2,7 @@ package app.controller;
 
 import app.domain.Car;
 import app.repository.CarRepository;
-import app.repository.CarRepositoryDB;
+//import app.repository.CarRepositoryDB;
 import app.repository.CarRepositoryHibernate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -49,6 +49,7 @@ public class CarServlet extends HttpServlet {
                 }
             } catch (Exception e) {
                 //TODO handle exception
+
             }
 
         } else {
